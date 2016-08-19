@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>статик</title>
+    <style>
+    @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700|PT+Mono);
+body {
+  background: white;
+  font-family: Lato, sans-serif;
+  font-size: 15px;
+  margin: 0;
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+*:focus {
+  outline: none;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+main {
+  min-height: 100vh;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.title {
+  color: #fff;
+  text-align: center;
+  font-weight: 300;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  font-size: 2.8em;
+  margin-top: 1.5em;
+}
+.title small {
+  display: block;
+  font-size: 0.6em;
+  margin-top: 0.4em;
+}
+.credits {
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  margin-top: 2em;
+  font-size: 0.8em;
+  opacity: 0.5;
+}
+.window {
+  width: 547px;
+  background: GhostWhite;
+  border-radius: 0.3rem;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+.window .window-header {
+  height: 37px;
+  background: Gainsboro;
+  position: relative;
+}
+.window .window-header .action-buttons {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  margin-top: -5px;
+  width: 10px;
+  height: 10px;
+  background: Crimson;
+  border-radius: 50%;
+  box-shadow: 15px 0 0 Orange,
+				30px 0 0 LimeGreen;
+}
+.window .window-header .language {
+  display: inline-block;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  margin-top: -10px;
+  height: 21px;
+  padding: 0 1em;
+  text-align: right;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+       appearance: none;
+  border: none;
+  background: transparent;
+  font-family: Lato, sans-serif;
+  color: DimGrey;
+}
+.window .window-header .language:before {
+  content: 'asd';
+}
+.window .window-header .language:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+.window .window-body {
+  position: relative;
+  height: 80vh;
+}
+.window .window-body .code-input,
+.window .window-body .code-output {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  border: none;
+  font-family: 'PT Mono', monospace;
+  font-size: 0.8rem;
+  background: transparent;
+  white-space: pre-wrap;
+  line-height: 1.5em;
+  word-wrap: break-word;
+}
+.window .window-body .code-input {
+  opacity: 0.7;
+  margin: 0;
+  color: #999;
+  resize: none;
+}
+.window .window-body .code-output {
+  pointer-events: none;
+  z-index: 3;
+  margin: 0;
+  overflow-y: auto;
+}
+.window .window-body .code-output code {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 1rem;
+  display: block;
+  color: #666;
+  font-size: 0.8rem;
+  font-family: 'PT Mono', monospace;
+}
+a.token {
+  text-decoration: none;
+}
+.token.selector,
+.token.punctuation,
+.token.keyword {
+  color: PaleVioletRed;
+}
+.token.property,
+.token.number,
+.token.string,
+.token.punctuation,
+.token.tag-id {
+  color: DodgerBlue;
+}
+.token.function,
+.token.attr-name {
+  color: CadetBlue;
+}
+.token.atrule .atrule-id {
+  color: BlueViolet;
+}
+.token.boolean {
+  color: LightSlateGray;
+}
+.token.comment {
+  color: DarkGrey;
+}
+.language-php .variable {
+  color: CadetBlue;
+}
+    </style>
+  </head>
+  <body>
+    <main class="view">
+	<div class="window">
+		<div class="window-header">
+			<div class="action-buttons"></div>
+			<select class="language">
+				<option value="javascript" selected>JavaScript</option>
+				<option value="markup">HTML</option>
+			</select>
+		</div>
+		<div class="window-body">
+			<textarea class="code-input"></textarea>
+			<pre class="code-output">
+				<code class="language-javascript">
+
+				</code>
+			</pre>
+		</div>
+	</div>
+</main>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js'></script>
+
+    <script>
+    ;var MicroCode = (function(){
+	return {
+		init: function(inputSel, outputSel, languageSel){
+			this.focusInput(inputSel);
+			this.listenForInput(inputSel);
+			this.listenForLanguage(languageSel, '.code-output', inputSel);
+			this.renderOutput(outputSel, $(inputSel)[0].value);
+			this.listenerForScroll(inputSel, outputSel);
+		},
+
+		listenForInput: function(inputSel){
+			var self = this;
+
+			$(inputSel).on('input keydown', function(key){
+				var input = this,
+					selStartPos = input.selectionStart,
+					inputVal = input.value;
+
+				if(key.keyCode === 9){
+					input.value = inputVal.substring(0, selStartPos) + "    " + inputVal.substring(selStartPos, input.value.length);
+					input.selectionStart = selStartPos + 4;
+					input.selectionEnd = selStartPos + 4;
+					key.preventDefault();
+				}
+
+				self.renderOutput('.code-output', this.value);
+			});
+
+			Prism.highlightAll();
+		},
+
+		listenForLanguage: function(languageSel, outputSel, inputSel){
+			var self = this;
+			$(languageSel).on('change', function(){
+				$('code', outputSel)
+					.removeClass()
+					.addClass('language-' + this.value)
+					.removeAttr('data-language');
+
+				$(outputSel)
+					.removeClass()
+					.addClass('code-output language-' + this.value);
+
+				$(inputSel)
+					.val('');
+
+				$('code', outputSel)
+					.html('');
+
+				self.focusInput(inputSel);
+			});
+		},
+
+		listenerForScroll: function(inputSel, outputSel){
+			$(inputSel).on('scroll', function(){
+				console.log(this.scrollTop);
+				$(outputSel)[0].scrollTop = this.scrollTop;
+			});
+		},
+
+		renderOutput: function(outputSel, value){
+			$('code', outputSel)
+				.html(value.replace(/&/g, "&amp;").replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;") + "\n");
+
+			Prism.highlightAll();
+		},
+
+		focusInput: function(inputSel){
+			var input = $(inputSel);
+
+			input.focus();
+
+			input[0].selectionStart = input[0].value.length;
+			input[0].selectionEnd = input[0].value.length;
+		}
+	}
+})();
+
+MicroCode.init('.code-input', '.code-output', '.language');
+
+
+function setval(el , v, callback, speed = 100 ){
+  if(typeof v === typeof []){
+    var t= 0 , i = 0;
+    var inter = setInterval(function(){
+    if(t < v[i].length)  t++ ; else{
+      if(i< v.length - 1){
+        t = 0;
+        setTimeout(function(){ i++; }, speed)
+      }else{
+        clearInterval(inter);
+        callback ? setTimeout(callback, speed) : void(0);
+      }
+    }
+      var a = v[i];
+        $(el).html( a.slice(0, t) );
+      }, speed)
+  }else{
+    var t= 0;
+    var inter = setInterval(function(){
+    if(t < v.length)  t++ ; else{
+      clearInterval(inter);
+        callback ? setTimeout(callback, speed) : void(0);
+      }
+      var a = v;
+      $(el).html( a.slice(0, t) );
+    }, speed)
+  }
+}
+
+	setval('.code-input', `статик - это такой метод
+  при котором время ответа на каждое следующее сообщение оппонента
+  длиннее предыдущего...
+  Просто превращаем реактивный обмен сообщениями в почту россии... `, function(){
+    setTimeout(function(){
+      setval('.code-input', `[
+        {
+        "id": 310605,
+        "body": "или контик так дико пролагивает",
+        "user_id": 343536964,
+        "from_id": 343536964,
+        "date": 1471557524,
+        "read_state": 0,
+        "out": 0,
+        "chat_id": 70
+        },
+        {
+        "id": 310604,
+        "body": "ты как-то странно меня подбаниваешь",
+        "user_id": 343536964,
+        "from_id": 343536964,
+        "date": 1471556156,
+        "read_state": 0,
+        "out": 0,
+        "chat_id": 70
+        },
+        {
+        "id": 310599,
+        "body": "или меня глючит..",
+        "user_id": 360539625,
+        "from_id": 360539625,
+        "date": 1471555606,
+        "read_state": 0,
+        "out": 0,
+        "chat_id": 70
+      }, <...> ]`, function(){
+        setval('.code-input', `
+        var fs = require('fs');
+
+        var data = JSON.parse(fs.readFileSync('./mes.json', 'utf-8'));
+
+        var oneid = [343536964, 210149434], twoid = [360539625],
+
+        max_r_t_a = 0, max_r_t_m = 0, middle_a = 0, middle_r =0, arr_a = [], arr_m = [], count_a = 0, count_m = 0;
+
+        var tail = 1;
+
+        for (var i=0;i<data.length-1;i++){
+          var mes = data[i], mes2 = data[i + 1];
+
+          if ( mes.from_id != mes2.from_id ){
+            if(tail){
+              var currenttimeres  = mes.date - mes2.date;
+              count_a++; max_r_t_a = Math.max( currenttimeres, max_r_t_a);
+              arr_a.push(currenttimeres);
+            }else{
+              var currenttimeres  = mes.date - mes2.date;
+              count_m++; max_r_t_m = Math.max( currenttimeres, max_r_t_m);
+              arr_m.push(currenttimeres);
+            }
+            tail = 1 - tail ;
+          } else {
+
+          }
+        }
+
+        function middle_time(arr){
+          var sym = 0;
+          for(var i in arr){ sym += arr[i] }
+          return Math.floor(sym/arr.length);
+        }
+
+        console.log(JSON.stringify({
+          "ars": {
+            arr: arr_a,
+            maxtime: max_r_t_a,
+            middle: middle_time(arr_a)
+          },
+          "masha":{
+            arr: arr_m,
+            maxtime: max_r_t_m,
+            middle: middle_time(arr_m)
+          }
+        },null,'\t'));
+        `, function(){
+            setval('.code-input', `
+
+            // maxtime - максимальное время ответа
+            // arr - массив со всеми временами ответа за данный период
+            // middle - среднее время ответа
+            {
+	"ars": {
+		"arr": [
+			550,
+			448,
+			192,
+			35928,
+			11940,
+			25137,
+			622,
+			39902,
+			9746,
+			130,
+			32,
+			8,
+			10,
+			2,
+			20,
+			2,
+			6,
+			34,
+			17,
+			14,
+			4,
+			18,
+			4,
+			24,
+			14,
+			192,
+			34,
+			64,
+			80,
+			60,
+			8,
+			42,
+			10,
+			32,
+			18,
+			82,
+			44,
+			0,
+			22,
+			12,
+			41
+		],
+		"maxtime": 39902,
+		"middle": 3062
+	},
+	"masha": {
+		"arr": [
+			20054,
+			27634,
+			2608,
+			5872,
+			35534,
+			9150,
+			30364,
+			23928,
+			4052,
+			152,
+			110,
+			10,
+			10,
+			62,
+			6,
+			6,
+			22,
+			51,
+			8,
+			6,
+			2,
+			18,
+			10,
+			4,
+			142,
+			53024,
+			140,
+			28,
+			60,
+			4,
+			44,
+			22,
+			10,
+			8,
+			76,
+			32,
+			16,
+			18,
+			12,
+			34,
+			36
+		],
+		"maxtime": 53024,
+		"middle": 5204
+	}
+}
+            `, ()=>{}, 10)
+        }, 10)
+      }, 10)
+    }, 5000);
+  })
+    </script>
+
+    <audio id='audio' src='/data/static.ogg' autoplay="true" />
+     <script>
+     var aud = document.getElementById("audio");
+     aud.onended = function() {
+       window.location.href = '/line';
+    };
+     </script>
+
+  </body>
+</html>
