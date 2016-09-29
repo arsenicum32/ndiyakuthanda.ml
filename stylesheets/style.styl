@@ -1,0 +1,37 @@
+.action
+  position absolute
+  top 0
+  width 100%
+  .rocket
+    position absolute
+    width 100px
+    height 100px
+    background url(/img/rocket.png) no-repeat 50% center
+    background-size contain
+    top 30vh
+    left 50vw
+    //transform rotate(47deg)
+  .planet
+    width 88vw
+    height 88vw
+    background url(/img/planet.png) no-repeat 50% center
+    background-size contain
+    margin auto
+    position relative
+    top 56vw
+    //animation 1s rot infinite
+    //transition all .8s ease-in
+.test
+   transform rotate(60deg)
+
+@media screen and (min-width: 800px)
+  .action
+    .planet
+      background url(/img/planet2.png) no-repeat center center
+      background-size contain
+
+@keyframes rot
+  from
+    transform rotate(0deg)
+  to
+    transform rotate(360deg)
